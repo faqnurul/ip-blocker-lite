@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name: IP & Country Blocker Lite
- * Plugin URI: https://proxyvpnblocker.com
+ * Plugin URI: https://github.com/faqnurul/ip-blocker-lite
  * Description: Block unwanted specific IPs and countries from accessing your website.
  * Version: 1.0.0
  * Author: Nurul Islam
