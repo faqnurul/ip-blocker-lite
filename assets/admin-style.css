@@ -1,0 +1,50 @@
+    .ip-blocker-container {
+                background: #fff;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .ip-blocker-container input,
+            .ip-blocker-container select {
+                width: 100%;
+                padding: 8px;
+                margin: 5px 0;
+            }
+
+            .btn-primary {
+                background: #0073aa;
+                color: #fff;
+                border: none;
+                padding: 8px 15px;
+                cursor: pointer;
+            }
+
+            .btn-danger {
+                background: #dc3545;
+                color: #fff;
+                border: none;
+                padding: 8px 15px;
+                cursor: pointer;
+            }
+
+            .btn-primary:hover {
+                background: #005f8d;
+            }
+
+            .btn-danger:hover {
+                background: #a71c2c;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+
+            th,
+            td {
+                padding: 10px;
+                border: 1px solid #ddd;
+                text-align: left;
+            }
