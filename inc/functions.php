@@ -4,7 +4,7 @@
 
 
 // Country List Functions
-function ipcb_lite_get_all_countries()
+function faqnurul_ipcbl_get_all_countries()
 {
     return [
         'Afghanistan',

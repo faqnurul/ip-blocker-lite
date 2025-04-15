@@ -22,22 +22,22 @@ if (!defined('ABSPATH')) {
 require_once plugin_dir_path(__FILE__) . 'inc/functions.php';
 
 // Activation Hook
-function ipcb_lite_ip_blocker_activate()
+function faqnurul_ipcbl_ip_blocker_activate()
 {
-    if (!get_option('ipcb_lite_ip_blocked_list')) {
-        update_option('ipcb_lite_ip_blocked_list', []);
+    if (!get_option('faqnurul_ipcbl_ip_blocked_list')) {
+        update_option('faqnurul_ipcbl_ip_blocked_list', []);
     }
-    if (!get_option('ipcb_lite_country_blocked_list')) {
-        update_option('ipcb_lite_country_blocked_list', []);
+    if (!get_option('faqnurul_ipcbl_country_blocked_list')) {
+        update_option('faqnurul_ipcbl_country_blocked_list', []);
     }
 }
-register_activation_hook(__FILE__, 'ipcb_lite_ip_blocker_activate');
+register_activation_hook(__FILE__, 'faqnurul_ipcbl_ip_blocker_activate');
 
 
 
 
 // Get Country from IP
-function ipcb_lite_get_user_country($ip)
+function faqnurul_ipcbl_get_user_country($ip)
 {
     $response = wp_remote_get("http://ip-api.com/json/{$ip}");
     if (is_wp_error($response)) {
@@ -48,27 +48,27 @@ function ipcb_lite_get_user_country($ip)
 }
 
 // Block IPs and Countries
-function ipcb_lite_ip_blocker_check_access()
+function faqnurul_ipcbl_ip_blocker_check_access()
 {
-    $blocked_ips = get_option('ipcb_lite_ip_blocked_list', []);
-    $blocked_countries = get_option('ipcb_lite_country_blocked_list', []);
+    $blocked_ips = get_option('faqnurul_ipcbl_ip_blocked_list', []);
+    $blocked_countries = get_option('faqnurul_ipcbl_country_blocked_list', []);
 
     $user_ip = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '0.0.0.0';
-    $user_country = ipcb_lite_get_user_country($user_ip);
+    $user_country = faqnurul_ipcbl_get_user_country($user_ip);
 
     if (!empty($blocked_ips[$user_ip])) {
         if ($blocked_ips[$user_ip]['expires'] == 0 || $blocked_ips[$user_ip]['expires'] > time()) {
-            ipcb_lite_ip_blocker_show_block_page('Your IP has been blocked!');
+            faqnurul_ipcbl_ip_blocker_show_block_page('Your IP has been blocked!');
         }
     }
 
     if (!empty($blocked_countries) && in_array($user_country, $blocked_countries)) {
-        ipcb_lite_ip_blocker_show_block_page('Your country is restricted from accessing this website.');
+        faqnurul_ipcbl_ip_blocker_show_block_page('Your country is restricted from accessing this website.');
     }
 }
-add_action('init', 'ipcb_lite_ip_blocker_check_access');
+add_action('init', 'faqnurul_ipcbl_ip_blocker_check_access');
 
-function ipcb_lite_ip_blocker_show_block_page($message)
+function faqnurul_ipcbl_ip_blocker_show_block_page($message)
 {
     $css = '
         <style>
@@ -96,31 +96,31 @@ function ipcb_lite_ip_blocker_show_block_page($message)
 
 
 // Admin Menu Page
-function ipcb_lite_ip_blocker_menu()
+function faqnurul_ipcbl_ip_blocker_menu()
 {
     add_menu_page(
         'IP & Country Blocker',
         'IP Blocker Lite',
         'manage_options',
         'ip-blocker-lite',
-        'ipcb_lite_ip_blocker_admin_page',
+        'faqnurul_ipcbl_ip_blocker_admin_page',
         'dashicons-lock',
         75
     );
 }
-add_action('admin_menu', 'ipcb_lite_ip_blocker_menu');
+add_action('admin_menu', 'faqnurul_ipcbl_ip_blocker_menu');
 
 
 
 // Admin Page UI
-function ipcb_lite_ip_blocker_admin_page()
+function faqnurul_ipcbl_ip_blocker_admin_page()
 {
     if (!current_user_can('manage_options')) {
         return;
     }
 
-    $blocked_ips = get_option('ipcb_lite_ip_blocked_list', []);
-    $blocked_countries = get_option('ipcb_lite_country_blocked_list', []);
+    $blocked_ips = get_option('faqnurul_ipcbl_ip_blocked_list', []);
+    $blocked_countries = get_option('faqnurul_ipcbl_country_blocked_list', []);
 
     // Handle Form Submission
     if (!empty($_SERVER['REQUEST_METHOD']) == 'POST') {
@@ -142,27 +142,27 @@ function ipcb_lite_ip_blocker_admin_page()
             $expires = ($duration > 0) ? time() + ($duration * 60) : 0;
             if (filter_var($new_ip, FILTER_VALIDATE_IP)) {
                 $blocked_ips[$new_ip] = ['expires' => $expires];
-                update_option('ipcb_lite_ip_blocked_list', $blocked_ips);
+                update_option('faqnurul_ipcbl_ip_blocked_list', $blocked_ips);
             }
         }
 
 
         if (!empty($_POST['unblock_ip'])) {
             unset($blocked_ips[sanitize_text_field(wp_unslash($_POST['unblock_ip']))]);
-            update_option('ipcb_lite_ip_blocked_list', $blocked_ips);
+            update_option('faqnurul_ipcbl_ip_blocked_list', $blocked_ips);
         }
 
         if (!empty($_POST['block_country'])) {
             $new_country = sanitize_text_field(wp_unslash($_POST['block_country']));
             if (!in_array($new_country, $blocked_countries)) {
                 $blocked_countries[] = $new_country;
-                update_option('ipcb_lite_country_blocked_list', $blocked_countries);
+                update_option('faqnurul_ipcbl_country_blocked_list', $blocked_countries);
             }
         }
 
         if (!empty($_POST['unblock_country'])) {
             $blocked_countries = array_diff($blocked_countries, [sanitize_text_field(wp_unslash($_POST['unblock_country']))]);
-            update_option('ipcb_lite_country_blocked_list', $blocked_countries);
+            update_option('faqnurul_ipcbl_country_blocked_list', $blocked_countries);
         }
     }
 ?>
@@ -213,7 +213,7 @@ function ipcb_lite_ip_blocker_admin_page()
             <form method="post">
                 <select name="block_country" required>
                     <option value="">Select a Country</option>
-                    <?php foreach (ipcb_lite_get_all_countries() as $country_name) : ?>
+                    <?php foreach (faqnurul_ipcbl_get_all_countries() as $country_name) : ?>
                         <option value="<?php echo esc_attr($country_name); ?>">
                             <?php echo esc_html($country_name); ?>
                         </option>
@@ -269,9 +269,9 @@ function ipcb_lite_ip_blocker_admin_page()
 
 
 // Enqueue Admin CSS
-add_action('admin_enqueue_scripts', 'ip_blocker_admin_styles');
+add_action('admin_enqueue_scripts', 'faqnurul_ipcbl_admin_styles');
 
-function ip_blocker_admin_styles($hook)
+function faqnurul_ipcbl_admin_styles($hook)
 {
     if ($hook !== 'toplevel_page_ip-blocker-lite') {
         return;
@@ -303,13 +303,12 @@ function ip_blocker_admin_styles($hook)
         true
     );
 }
-add_action('admin_enqueue_scripts', 'ip_blocker_admin_styles');
 
 // Added Setting Links on plugin page
-function ipcb_lite_plugin_action_links($links)
+function faqnurul_ipcbl_plugin_action_links($links)
 {
     $settings_link = '<a href="' . admin_url('admin.php?page=ip-blocker-lite') . '">Settings</a>';
     array_unshift($links, $settings_link);
     return $links;
 }
-add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'ipcb_lite_plugin_action_links');
+add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'faqnurul_ipcbl_plugin_action_links');
